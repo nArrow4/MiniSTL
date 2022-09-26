@@ -1,3 +1,6 @@
+#ifndef _MINISTL_LOGGER_H
+#define _MINISTL_LOGGER_H
+
 #include <iostream>
 
 #define DEBUG
@@ -7,7 +10,7 @@ namespace mystl{
 #ifdef DEBUG
 
 #define LOG(str) \
-    std::cout << str << std::endl;
+    std::cout << str << std::endl
 
 #else
 
@@ -16,3 +19,5 @@ namespace mystl{
 #endif
 
 }
+
+#endif // _MINISTL_LOGGER_H

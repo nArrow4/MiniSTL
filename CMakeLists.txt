@@ -5,8 +5,18 @@ project(ministl)
 include_directories(includes)
 
 function(tests arg)
-    list(GET ARGV 0 demo_name)
-    add_executable(${demo_name} tests/${demo_name}.cpp)
+    list(GET ARGV 0 test_name)
+    add_executable(${test_name} tests/${test_name}.cpp)
 endfunction(tests)
 
-tests(vector_demo)
+tests(allocator_test)
+tests(iterator_test)
+tests(vector_test)
+
+function(demos arg)
+    list(GET ARGV 0 demo_name)
+    add_executable(${demo_name} demos/${demo_name}.cpp)
+endfunction(demos)
+
+demos(template_parameter_pack)
+demos(is_same)

@@ -26,11 +26,11 @@ void construct(T* ptr, Args&&... args)
 }
 
 template <typename T>
-void destroy_one(T* ptr, std::true_type t)
+void destroy_one(T* ptr, std::true_type)
 { }
 
 template <typename T>
-void destroy_one(T* ptr, std::false_type t)
+void destroy_one(T* ptr, std::false_type)
 {
     if(!ptr) return;
     ptr->~T();

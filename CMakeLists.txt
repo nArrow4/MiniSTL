@@ -20,3 +20,4 @@ endfunction(demos)
 
 demos(template_parameter_pack)
 demos(is_same)
+demos(sfinae)

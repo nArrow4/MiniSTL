@@ -10,7 +10,7 @@ namespace mystl{
 #ifdef DEBUG
 
 #define LOG(str) \
-    std::cout << str << std::endl
+    std::cout << (str) << std::endl
 
 #else
 

@@ -12,168 +12,166 @@
 
 namespace mystl{
 
-// template <class T>  // 类型名为T
-// class vector{
-//     // 不支持bool？
-//     static_assert(!std::is_same<T, bool>::value, "vector<bool> is not supported.");
-// public:
-//     typedef mystl::allocator<T>     allocator_type;
-//     typedef mystl::allocator<T>     data_allocator;
+template <class T>  // 类型名为T
+class vector{
+// 不支持vector<bool>
+    static_assert(!std::is_same<T, bool>::value, "vector<bool> is not supported.");
+// vector嵌套型别定义
+public:
+    typedef mystl::allocator<T>     allocator_type;
+    typedef mystl::allocator<T>     data_allocator;
 
-//     // typename 指明为类型而不是成员
-//     typedef typename allocator_type::value_type         value_type;
-//     typedef typename allocator_type::size_type          size_type;
-//     typedef typename allocator_type::reference          reference;
-//     typedef typename allocator_type::const_reference    const_reference;
+    // typename 指明为类型而不是成员
+    typedef typename allocator_type::value_type      value_type;
+    typedef typename allocator_type::pointer         pointer;
+    typedef typename allocator_type::const_pointer   const_pointer;
+    typedef typename allocator_type::reference       reference;
+    typedef typename allocator_type::const_reference const_reference;
+    typedef typename allocator_type::size_type       size_type;
+    typedef typename allocator_type::difference_type difference_type;
 
-//     typedef value_type*             iterator;
-//     typedef const value_type*       const_iterator;
+    typedef value_type*             iterator;
+    typedef const value_type*       const_iterator;
+
+// 构造、析构、移动函数
+public:
+    vector() noexcept;
+    vector(size_type n);
+    vector(size_type n, const value_type& value);
+    template <class Iter, typename std::enable_if
+        <mystl::is_input_iterator<Iter>::value, int>::type = 0>
+    vector(Iter first, Iter last);
+    vector(const vector& rhs);
+    vector(vector&& rhs) noexcept;
+    vector(std::initializer_list<value_type> il);
+
+    ~vector()
+    { _begin = _end = _cap = nullptr; }
     
-// private:
-//     iterator _begin;
-//     iterator _end;
-//     iterator _cap;
+    vector& operator=(const vector& rhs);
+    vector& operator=(vector&& rhs) noexcept;
+    vector& operator=(std::initializer_list<value_type> ilist);
 
+// 迭代器相关
+private:
+    iterator _begin;    // 目前使用空间的起始位置
+    iterator _end;      // 目前使用空间的结束位置
+    iterator _cap;      // 当前空间的结束位置
+
+public:
+    iterator begin() noexcept
+    { return _begin; }
+    const_iterator begin() const noexcept
+    { return _begin; }
+    const_iterator cbegin() noexcept
+    { return _begin; }
+    iterator end() noexcept
+    { return _end; }
+    const_iterator end() const noexcept
+    { return _end; }
+    const_iterator cend() noexcept
+    { return _end; }
     
-// public:
-//     // 构造函数
-//     vector() noexcept   // 构造时出现异常就终止程序
-//     { LOG("vector()"); try_init(); }
+    size_type size() noexcept
+    { return static_cast<size_type>(end() - begin()); }
+    size_type capacity() noexcept
+    { return static_cast<size_type>(capacity() - begin()); }
+    size_type max_size() noexcept
+    { return static_cast<size_type>(-1) - sizeof(T); }
+    bool empty() const noexcept
+    { return begin() == end(); }
+    void reserve(size_type n);
+    void shrink_to_fit();
 
-//     explicit vector(size_type n)
-//     { LOG("vector(n)"); fill_init(n, value_type()); } // value_type()用于初始化
+// 访问元素
+public:
+    reference operator[] (size_type n)
+    { return *(_begin + n); }
+    const_reference operator[] (size_type n) const 
+    { return *(_begin + n); }
+    reference at (size_type n)
+    { return (*this)[n]; }
+    const_reference at (size_type n) const 
+    { return (*this)[n]; }
 
-//     explicit vector(size_type n, const value_type& value)
-//     { LOG("vector(n, value)"); fill_init(n, value); }
+    iterator front()
+    { return *_begin; }
+    const_iterator front() const
+    { return *_begin; }
+    iterator back()
+    { return *(_end - 1); }
+    const_iterator back() const
+    { return *(_end - 1); }
 
-//     template <class Iter, typename std::enable_if<  // enable_if选择
-//         mystl::is_input_iterator<Iter>::value, int>::type = 0>
-//     vector(Iter first, Iter last)
-//     { LOG("vector(begin, end)"); range_init(first, last); }
+    pointer data() noexcept
+    { return _begin; }
+    const_pointer data() const noexcept
+    { return _begin; }
 
-//     vector(const vector& rhs)
-//     { LOG("vector(const vector&)"); range_init(rhs._begin, rhs._end); }
+// 修改容器
+public:
+    template <typename ...Args>
+    iterator emplace(const_iterator pos, Args&& ...args);
+    template <typename ...Args>
+    void emplace_back(Args&& ...args);
 
-//     vector(vector&& rhs) noexcept
-//         :_begin(rhs._begin),
-//         _end(rhs._end),
-//         _cap(rhs._cap)
-//     {
-//         LOG("vector(vector&&)");
-//         rhs._begin = nullptr;
-//         rhs._end = nullptr;
-//         rhs._cap = nullptr;
-//     }
+    void push_back(const value_type& value);
+    void push_back(value_type&& value);
+    void pop_back();
 
-//     vector(std::initializer_list<value_type> ilist)
-//     { LOG("vector(ilist)"); range_init(ilist.begin(), ilist.end()); }
+    void assign(size_type n, const value_type& value);
+    void assign(std::initializer_list<value_type> il);
+    template <typename Iter, typename std::enable_if
+        <mystl::is_input_iterator<Iter>::value, int>::type = 0>
+    void assign(Iter first, Iter last);
 
-//     // 复制、移动
-//     vector& operator=(const vector& rhs);
-//     vector& operator=(vector&& rhs) noexcept;
-//     vector& operator=(std::initializer_list<value_type> ilist);
+    iterator insert(const_iterator pos, const value_type& value);
+    iterator insert(const_iterator pos, value_type&& value);
+    iterator insert(const_iterator pos, size_type n, const value_type& value);
+    template <typename Iter, std::enable_if
+        <mystl::is_input_iterator<Iter>::value, int>::type = 0>
+    iterator insert(const_iterator pos, Iter first, Iter last);
 
-//     // 析构
-//     ~vector()
-//     {
-//         _begin = _end = _cap = nullptr;
-//     }
+    iterator erase(const_iterator pos);
+    iterator erase(const_iterator first, const_iterator last);
+    void clear() { erase(begin(), end()); }
 
-// public:     // 容量相关
-//     bool empty() const noexcept
-//     { return _begin == _end; }
-//     size_type size() const noexcept
-//     { return static_cast<size_type>(_begin - _end); }
-//     size_type capacity() const noexcept
-//     { return static_cast<size_type>(_cap - _end); }
+    void resize(size_type n);
+    void resize(size_type n, const value_type& value);
 
-//     // 访问元素
-//     reference operator[](size_type n)
-//     {
-//         return *(_begin + n);
-//     }
+    void swap(vector& rhs) noexcept;
 
-//     const_reference operator[](size_type n) const
-//     {
-//         return *(_begin + n);
-//     }
-
-//     reference at(size_type n)
-//     {
-//         return (*this)[n];
-//     }
-
-// public:     // 迭代器相关
-//     iterator begin() noexcept
-//     { return _begin; }
-
-//     iterator begin() const noexcept
-//     { return _begin; }
-
-//     iterator end()  noexcept
-//     { return _end; }
-
-//     iterator end()  const noexcept
-//     { return _end; }
-
-// private:
-//     void try_init() noexcept;
-
-//     void init_space(size_type size, size_type cap);
+// helper函数
+private:
+    // 各种配置空间的方式：单个元素、连续空间、迭代器...
+    void try_init() noexcept;
+    void fill_init(size_type n, const value_type& value); 
+    template <typename Iter>
+    void range_init(Iter first, Iter last);
+    void init_space(size_type size, size_type cap); 
     
-//     void fill_init(size_type n, const value_type& value); 
-    
-//     template <typename Iter>
-//     void range_init(Iter first, Iter last);
+    // 析构并释放空间
+    void destroy_and_recover(iterator first, iterator last, size_type n);
 
-// };
+    // 扩容函数
+    void get_new_cap(size_type add_size);
 
-// template <typename T>
-// void vector<T>::
-// try_init() noexcept{
-//     try{
-//         _begin = data_allocator::allocate(16);
-//         _end = _begin + 0;
-//         _cap = _begin + 16;
-//     } catch(...) {
-//         _begin = _cap = _end = nullptr;
-//     }
-// }
+    // assign辅助函数
+    void fill_assign(size_type n, const value& value);
+    template <typename InputIter>
+    void copy_assign(InputIter first, InputIter last, input_iterator_tag);
+    template <typename ForwardIter>
+    void copy_assign(ForwardIter first, ForwardIter last, forward_iterator_tag);
 
-// template <typename T>
-// void vector<T>::
-// fill_init(size_type n, const value_type& value)
-// {
-//     const size_type cap_size = static_cast<size_type>(16);
-//     init_space(n, mystl::max(cap_size, n));
-// }
-
-// // 不能这样写：template <typename T, typename Iter>
-// template <typename T>
-// template <typename Iter>
-// void vector<T>::
-// range_init(Iter first, Iter last)
-// {
-//     const size_type cap_size = static_cast<size_type>(16);
-//     const size_type alloc_size = static_cast<size_type>(last - first);
-//     init_space(alloc_size, mystl::max(cap_size, alloc_size));
-//     // uninitialized_copy();
-// }
-
-// template <typename T>
-// void vector<T>::
-// init_space(size_type n, size_type cap)
-// {
-//     // 默认cap为16，实际看last-first和cap的较大
-//     try{
-//         _begin = data_allocator::allocate(cap);
-//         _end = _begin + n;
-//         _cap = _begin + cap;
-//     } catch(...) {
-//         _begin = _cap = _end = nullptr;
-//         throw;
-//     }
-// }
+    // 重新分配空间
+    template <typename ..Args>
+    void reallocate_emplace(iterator pos, Args&& ...args);
+    void reallocate_insert(iterator pos, const value_type& value);
+    void fill_insert(iterator pos, size_type n, const value_type& value);
+    template <typename Iter>
+    void copy_insert(iterator pos, Iter first, Iter last);
+    void reinsert(size_type n);
+};
 
 }
 

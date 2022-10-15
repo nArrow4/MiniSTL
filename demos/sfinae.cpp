@@ -1,28 +1,39 @@
+/**
+ * @Description: 
+ *      SFINAE: Substitution Failure Is Not An Error.
+ *      目前接触过的用法主要是判断类是否有某个变量或方法
+ *      原理是利用函数重载决议，实现编译器匹配
+ *      has_a、has_func_a、has_member
+ *      这里has_a和has_func_a用了两种不同的写法
+ * @Email: zhiyyyu@gmail.com
+ * @Author: Zehui Deng
+ * @Github: nArrow4
+ * @Date: 2022-09-27 17:21:48
+ */
 #include "logger.hpp"
 
 class A {
 public:
     typedef int a;
     void func_a() { LOG("func_a"); }
+    static void static_func_a() { LOG("static func_a"); }
 };
 
 class B {
 public:
     typedef int b;
-    void func_b() {}
+    void func_b() { LOG("func_b"); }
 };
 
-template <typename T, typename M>
-struct has_member {
-private:
-    struct two { char a; char b; };
-    template <typename U>
-    static two test(...);
-    template <typename U>
-    static char test(M );
-public:
-    static const bool value = sizeof(test<T>(0)) == sizeof(char);
-};
+// template <typename T, typename M>
+// struct has_member {
+//     template <typename U>
+//     static std::false_type test(...);
+//     template <typename U>
+//     static std::true_type test(M* = 0);
+// public:
+//     enum { value = std::is_same<decltype(test<T>(0)), std::true_type>::value };
+// };
 
 template <typename T>
 struct has_a {
@@ -39,13 +50,12 @@ public:
 template <typename T>
 struct has_func_a {
 private:
-    struct two { char a; char b; };
     template <typename U>
-    static two test(...);
+    static std::false_type test(...);
     template <typename U>
-    static char test(decltype(&U::func_a) = 0);
+    static std::true_type test(decltype(std::declval<U>().func_a())* = 0);
 public:
-    static const bool value = sizeof(test<T>(NULL)) == sizeof(char);
+    enum { value = std::is_same<decltype(test<T>(0)), std::true_type>::value };
 };
 
 int main() {
@@ -58,10 +68,12 @@ int main() {
     LOG(has_func_a<A>::value);
     LOG(has_func_a<B>::value);
 
-    LOG((has_member<A, A::a>::value));
-    LOG((has_member<B, A::a>::value));
-    LOG((has_member<A, decltype(&A::func_a)>::value));
-    LOG((has_member<B, decltype(&A::func_a)>::value));
+    // LOG((has_member<A, A::a>::value));
+    // LOG((has_member<B, A::a>::value));
+    // LOG((has_member<A, decltype(&A::func_a)>::value));
+    // LOG((has_member<B, decltype(&A::func_a)>::value));
 
-    
+    /* result:
+        1010
+    */
 }

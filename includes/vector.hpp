@@ -8,6 +8,8 @@
 #include "logger.hpp"
 #include "allocator.hpp"
 #include "iterator.hpp"
+#include "algobase.hpp"
+#include "uninitialized.hpp"
 
 
 namespace mystl{
@@ -35,15 +37,23 @@ public:
 
 // 构造、析构、移动函数
 public:
-    vector() noexcept;
-    vector(size_type n);
-    vector(size_type n, const value_type& value);
+    vector() noexcept 
+    { try_init(); }
+    vector(size_type n)
+    { fill_init(n, value_type()); }
+    vector(size_type n, const value_type& value)
+    { fill_init(n, value); }
     template <class Iter, typename std::enable_if
         <mystl::is_input_iterator<Iter>::value, int>::type = 0>
-    vector(Iter first, Iter last);
-    vector(const vector& rhs);
-    vector(vector&& rhs) noexcept;
-    vector(std::initializer_list<value_type> il);
+    vector(Iter first, Iter last)
+    { range_init(first, last); }
+    vector(const vector& rhs)
+    { range_init(rhs.begin(), rhs.end()); }
+    vector(vector&& rhs) noexcept: 
+        _begin(rhs.begin()), _end(rhs.end()), _cap(rhs._cap)
+    { rhs._begin = rhs._end = rhs._cap = nullptr; }
+    vector(std::initializer_list<value_type> il)
+    { range_init(il.begin(), il.end()); }
 
     ~vector()
     { _begin = _end = _cap = nullptr; }
@@ -53,7 +63,7 @@ public:
     vector& operator=(std::initializer_list<value_type> ilist);
 
 // 迭代器相关
-private:
+public:
     iterator _begin;    // 目前使用空间的起始位置
     iterator _end;      // 目前使用空间的结束位置
     iterator _cap;      // 当前空间的结束位置
@@ -172,6 +182,57 @@ private:
     void copy_insert(iterator pos, Iter first, Iter last);
     void reinsert(size_type n);
 };
+
+// 构造函数辅助函数
+template <typename T>
+void vector<T>::try_init() noexcept {
+    try {
+        _begin = data_allocator(16); _end = _begin; _cap = _begin + 16;
+    } catch(...) {
+        _begin = _end = _cap = nullptr;
+    }
+}
+
+template <typename T>
+void vector<T>::init_space(size_type size, size_type cap) {
+    try {
+        _begin = data_allocator(cap); _end = _begin + size; _cap = _begin + cap;
+    } catch(...) {
+        _begin = _end = _cap = nullptr; throw;
+    }
+}
+
+template <typename T>
+void vector<T>::fill_init(size_type n, const value_type& value) {
+    const size_type init_size = mystl::max(static_cast<size_type>(16), n);
+    init_space(n, init_size);
+    mystl::uninitialized_fill_n(_begin, n, value);
+}
+
+template <typename T>
+template <typename Iter>
+void vector<T>::range_init(Iter first, Iter last) {
+    const size_type init_size = mystl::max(static_cast<size_type>(last - first), static_cast<size_type>(16));
+    init_space(static_cast<size_type>(last - first), init_size);
+    mystl::uninitialized_copy(first, last, _begin);
+}
+
+// 赋值运算符重载
+template <typename T>
+vector<T>&
+vector<T>::operator=(const vector& rhs) {
+    if(this == &rhs) {
+        return *this;
+    }
+    const auto len = rhs.size();
+    if(len > capacity()) {
+        vector<T> tmp(rhs.begin(), rhs.end());
+    } else if(len > size()) {
+        
+    } else {
+
+    }
+}
 
 }
 

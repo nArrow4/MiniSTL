@@ -1,6 +1,8 @@
 # MiniSTL
 
-基于C++11的小型STL，主要用于学习现代C++
+基于C++11的小型STL
+
+在这里你可以学到基础数据结构、算法、现代C++、Traits技法、SFINAE技法等等
 
 # Dependence
 

@@ -1,5 +1,7 @@
 ## iterator
 
+STL中的容器和算法是分开设计的，迭代器用于连接二者。
+
 迭代器的行为类似指针，具体来说有五种：
 
 1. Input Iterator：只读
@@ -47,6 +49,18 @@ class A<int, float, double> {};
 
 ```sh
 is_convertible <A, B>::value;
+```
+
+* **std::declval<T>()**
+
+将类型T转换成引用类型，一般用于在不创建对象的情况下达到创建对象的效果
+
+```cpp
+class A {
+public:
+    void func();
+};
+decltype(std::declval<T>().func())
 ```
 
 * **判断迭代器类型**

@@ -8,6 +8,7 @@ $allocator->constructor->iterator->vector/list/->$
 * [Allocator & Constructor](./Allocator%26Constructor.md)
 * [Iterator](./Iterator.md)
 * [Vector](./Vector.md)
+* [List](./List.md)
 
 # 使用到的C++技巧
 

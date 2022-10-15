@@ -11,6 +11,11 @@ const T& max(const T& a, const T& b){
 }
 
 template <typename T>
+const T& min(const T& a, const T& b) {
+    return a < b ? a : b;
+}
+
+template <typename T>
 T&& forward(typename std::remove_reference<T>::type& param) noexcept{
     return static_cast<T&&>(param);
 }

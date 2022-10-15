@@ -3,7 +3,7 @@
 
 vector属于序列式容器，是和array很类似的数据结构。区别在于vector可以动态扩容，而array需要重新配置空间。
 
-同时vector可以随机读取，所以提供一个Random Access Iterator。
+同时vector可以随机读取，所以提供一个Random Access Iterator（就以原生指针的形式出现）。
 
 #### 一些思考
 

@@ -74,13 +74,15 @@ struct iterator_traits<const T*> {
     typedef random_access_iterator_tag  iterator_category;
 };
 
-// Iterator类
+// iterator类
+// Category表明迭代器的类型
+// T表明迭代器中数据的类型
 template <typename Category,
           typename T,
           typename Distance = ptrdiff_t,
           typename Pointer = T*,
           typename Reference = T&>
-struct Iterator {
+struct iterator {
     typedef Category        iterator_category;
     typedef T               value_type;
     typedef Distance        difference_type;

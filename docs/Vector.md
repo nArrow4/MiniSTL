@@ -1,4 +1,3 @@
-
 ## vector
 
 vector属于序列式容器，是和array很类似的数据结构。区别在于vector可以动态扩容，而array需要重新配置空间。
@@ -46,7 +45,7 @@ std::is_same<T, bool>::value
 
 * **static_assert**
 
-可以理解为编译器的assert
+可以理解为编译期的assert
 
 * **const重载**
 
@@ -78,3 +77,8 @@ void func(std::initializer_list<value_type> il) {}
 * **noexcept**
 
 告诉编译器这个函数不会产生异常，这样编译器可以做更多优化。一旦产生异常，程序就会终止。
+
+* **[emplace_back和push_back的区别](https://blog.csdn.net/xiaolewennofollow/article/details/52559364)**
+
+push_back会创建临时变量然后插入到相应的位置，而emplace_back会原地构造。
+同时push_back只支持value_type类型对象的传入，不支持其他形式构造，而emplace_back是支持的。

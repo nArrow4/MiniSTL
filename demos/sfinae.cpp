@@ -35,6 +35,12 @@ public:
 //     enum { value = std::is_same<decltype(test<T>(0)), std::true_type>::value };
 // };
 
+/**
+ * @brief: 第二个test函数中，模板传入U::a类型
+ *      如果此时U是类A，则含有a，匹配成功
+ *      如果此时U是int，则int::a会产生编译错误，
+ *      但由于SFINAE，不会报错，而是匹配到第一个test函数
+ */
 template <typename T>
 struct has_a {
 private:
@@ -61,7 +67,7 @@ public:
 int main() {
     
     // 这里的aa是函数指针，但是因为func_a不是静态成员函数，所以这里的地址是不正确的
-    decltype(&A::func_a) aa;
+    // decltype(&A::func_a) aa;
     
     LOG(has_a<A>::value);
     LOG(has_a<B>::value);

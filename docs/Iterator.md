@@ -43,6 +43,8 @@ class A<int, float, double> {};
 
 这种方法适用于检测类是否包含某些成员变量
 
+这里和github上MyTinySTL不太一样，因为测试的时候发现int*的is_iterator为false
+
 * **std::is_convertible**
 
 用于判断两种类型能否隐式转换

@@ -57,21 +57,23 @@ struct iterator_traits :
 // 指针的偏特化
 template <typename T>
 struct iterator_traits<T*> {
-    typedef T                           value_type;
-    typedef ptrdiff_t                   difference_type;
-    typedef T&                          reference;
-    typedef T*                          pointer;
-    typedef random_access_iterator_tag  iterator_category;
+    typedef T                                   value_type;
+    typedef ptrdiff_t                           difference_type;
+    typedef T&                                  reference;
+    typedef T*                                  pointer;
+    typedef random_access_iterator_tag          iterator_category;
+    // just for test
+    typedef void                                test;   
 };
 
 // const指针的偏特化
 template <typename T>
 struct iterator_traits<const T*> {
-    typedef T                           value_type;
-    typedef ptrdiff_t                   difference_type;
-    typedef const T&                    reference;
-    typedef const T*                    pointer;
-    typedef random_access_iterator_tag  iterator_category;
+    typedef T                                   value_type;
+    typedef ptrdiff_t                           difference_type;
+    typedef const T&                            reference;
+    typedef const T*                            pointer;
+    typedef random_access_iterator_tag          iterator_category;
 };
 
 // iterator类
@@ -91,7 +93,7 @@ struct iterator {
 };
 
 // 判断迭代器的类型
-template <typename T, typename U, bool = has_iterator_cat<T>::value>
+template <typename T, typename U, bool = has_iterator_cat<iterator_traits<T>>::value>
 struct has_iterator_cat_of :
     public m_bool_constant<std::is_convertible<
     typename iterator_traits<T>::iterator_category, U>::value> {};
@@ -125,6 +127,20 @@ struct is_iterator :
     public m_bool_constant<is_input_iterator<Iterator>::value || 
     is_output_iterator<Iterator>::value> {};
 
+/**** 萃取迭代器特性 ****/
+/**
+ * @brief: 萃取迭代器类型
+ */
+template <typename Iterator>
+typename iterator_traits<Iterator>::iterator_category
+iterator_category(const Iterator&) {
+    typedef typename iterator_traits<Iterator>::iterator_category Category;
+    return Category();
 }
+
+}
+
+
+
 
 #endif // _MINISTL_ITERATOR_H

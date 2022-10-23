@@ -8,9 +8,6 @@
 #include "logger.hpp"
 #include "allocator.hpp"
 #include "iterator.hpp"
-#include "algobase.hpp"
-#include "uninitialized.hpp"
-
 
 namespace mystl{
 
@@ -44,7 +41,7 @@ public:
     vector(size_type n, const value_type& value)
     { fill_init(n, value); }
     template <class Iter, typename std::enable_if
-        <mystl::is_input_iterator<Iter>::value, int>::type = 0>
+        <mystl::is_iterator<Iter>::value, int>::type = 0>
     vector(Iter first, Iter last)
     { range_init(first, last); }
     vector(const vector& rhs)
@@ -82,11 +79,12 @@ public:
     const_iterator cend() noexcept
     { return _end; }
     
-    size_type size() noexcept
-    { return static_cast<size_type>(end() - begin()); }
-    size_type capacity() noexcept
-    { return static_cast<size_type>(capacity() - begin()); }
-    size_type max_size() noexcept
+    // const 引用只能访问const函数
+    size_type size() const noexcept
+    { return static_cast<size_type>(_end - _begin); }
+    size_type capacity() const noexcept
+    { return static_cast<size_type>(_cap - _begin); }
+    size_type max_size() const noexcept
     { return static_cast<size_type>(-1) - sizeof(T); }
     bool empty() const noexcept
     { return begin() == end(); }
@@ -138,7 +136,7 @@ public:
     iterator insert(const_iterator pos, const value_type& value);
     iterator insert(const_iterator pos, value_type&& value);
     iterator insert(const_iterator pos, size_type n, const value_type& value);
-    template <typename Iter, std::enable_if
+    template <typename Iter, typename std::enable_if
         <mystl::is_input_iterator<Iter>::value, int>::type = 0>
     iterator insert(const_iterator pos, Iter first, Iter last);
 
@@ -164,17 +162,17 @@ private:
     void destroy_and_recover(iterator first, iterator last, size_type n);
 
     // 扩容函数
-    void get_new_cap(size_type add_size);
+    size_type get_new_cap(size_type add_size);
 
     // assign辅助函数
-    void fill_assign(size_type n, const value& value);
+    void fill_assign(size_type n, const value_type& value);
     template <typename InputIter>
     void copy_assign(InputIter first, InputIter last, input_iterator_tag);
     template <typename ForwardIter>
     void copy_assign(ForwardIter first, ForwardIter last, forward_iterator_tag);
 
     // 重新分配空间
-    template <typename ..Args>
+    template <typename ...Args>
     void reallocate_emplace(iterator pos, Args&& ...args);
     void reallocate_insert(iterator pos, const value_type& value);
     void fill_insert(iterator pos, size_type n, const value_type& value);
@@ -183,57 +181,10 @@ private:
     void reinsert(size_type n);
 };
 
-// 构造函数辅助函数
-template <typename T>
-void vector<T>::try_init() noexcept {
-    try {
-        _begin = data_allocator(16); _end = _begin; _cap = _begin + 16;
-    } catch(...) {
-        _begin = _end = _cap = nullptr;
-    }
 }
 
-template <typename T>
-void vector<T>::init_space(size_type size, size_type cap) {
-    try {
-        _begin = data_allocator(cap); _end = _begin + size; _cap = _begin + cap;
-    } catch(...) {
-        _begin = _end = _cap = nullptr; throw;
-    }
-}
-
-template <typename T>
-void vector<T>::fill_init(size_type n, const value_type& value) {
-    const size_type init_size = mystl::max(static_cast<size_type>(16), n);
-    init_space(n, init_size);
-    mystl::uninitialized_fill_n(_begin, n, value);
-}
-
-template <typename T>
-template <typename Iter>
-void vector<T>::range_init(Iter first, Iter last) {
-    const size_type init_size = mystl::max(static_cast<size_type>(last - first), static_cast<size_type>(16));
-    init_space(static_cast<size_type>(last - first), init_size);
-    mystl::uninitialized_copy(first, last, _begin);
-}
-
-// 赋值运算符重载
-template <typename T>
-vector<T>&
-vector<T>::operator=(const vector& rhs) {
-    if(this == &rhs) {
-        return *this;
-    }
-    const auto len = rhs.size();
-    if(len > capacity()) {
-        vector<T> tmp(rhs.begin(), rhs.end());
-    } else if(len > size()) {
-        
-    } else {
-
-    }
-}
-
-}
+// 别写到namespace里了
+#include "vector/vector_helper.hpp"
+#include "vector/vector_func.hpp"
 
 #endif // _MINISTL_VECTOR_H

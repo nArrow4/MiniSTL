@@ -46,7 +46,7 @@ template <typename T>
 T* allocator<T>::
 allocate()
 {
-    LOG("allocate()");
+    // LOG("allocate()");
     return static_cast<T*>(::operator new(sizeof(T))); 
 }
 
@@ -54,7 +54,7 @@ template <typename T>
 T* allocator<T>::
 allocate(size_type n)
 {
-    LOG("allocate(size_type n)");
+    // LOG("allocate(size_type n)");
     if(n == 0) return nullptr;
     // ::operator new 只会分配内存，不会调用构造函数
     return static_cast<T*>(::operator new(n * sizeof(T)));
@@ -64,7 +64,7 @@ template <typename T>
 void allocator<T>::
 deallocate(T* ptr)
 {
-    LOG("deallocate(T* ptr)");
+    // LOG("deallocate(T* ptr)");
     if(!ptr) return;
     ::operator delete(ptr);
 }
@@ -73,7 +73,7 @@ template <typename T>
 void allocator<T>::
 deallocate(T* ptr, size_type n)
 {
-    LOG("deallocate(T* ptr, size_type n)");
+    // LOG("deallocate(T* ptr, size_type n)");
     if(!ptr) return;
     ::operator delete(ptr);
 }
@@ -82,7 +82,7 @@ template <typename T>
 void allocator<T>::
 construct(T* ptr)
 {
-    LOG("construct(T* ptr)");
+    // LOG("construct(T* ptr)");
     mystl::construct(ptr);
 }
 
@@ -90,7 +90,7 @@ template <typename T>
 void allocator<T>::
 construct(T* ptr, const T& value)
 {
-    LOG("construct(T* ptr, const T& value)");
+    // LOG("construct(T* ptr, const T& value)");
     mystl::construct(ptr, value);
 }
 
@@ -98,7 +98,7 @@ template <typename T>
 void allocator<T>::
 construct(T* ptr, T&& value)
 {
-    LOG("construct(T* ptr, T&& value)");
+    // LOG("construct(T* ptr, T&& value)");
     mystl::construct(ptr, move(value));
 }
 
@@ -107,7 +107,7 @@ template <typename ...Args>
 void allocator<T>::
 construct(T* ptr, Args&&... args)
 {
-    LOG("construct(T* ptr, Args&& ... args)");
+    // LOG("construct(T* ptr, Args&& ... args)");
     mystl::construct(ptr, mystl::forward<Args>(args)...);
 }
 
@@ -115,7 +115,7 @@ template <typename T>
 void allocator<T>::
 destory(T* ptr)
 {
-    LOG("destory(T* ptr)");
+    // LOG("destory(T* ptr)");
     mystl::destory(ptr);
 }
 
@@ -123,7 +123,7 @@ template <typename T>
 void allocator<T>::
 destory(T* first, T* last)
 {
-    LOG("destory(T* first, T* last)");
+    // LOG("destory(T* first, T* last)");
     mystl::destory(first, last);
 }
 

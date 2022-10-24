@@ -4,6 +4,10 @@
 
 在这里你可以学到基础数据结构、算法、现代C++、Traits技法、SFINAE技法等等
 
+# Tutorial
+
+[记录一下学习过程中的笔记](./docs/Tutorial.md)
+
 # Dependence
 
 * Win11 + WSL2 + Ubuntu20.04
@@ -47,6 +51,3 @@ make -j4
 * algorithm
 * functional
 
-# Tutorial
-
-[记录一下学习过程中的笔记](./docs/Tutorial.md)

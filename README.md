@@ -25,16 +25,18 @@ make -j4
 
 * allocator
 * constructor
+* iterator
 
 # Working On
 
-* iterator
 * vector
+* list
+* deque
+
+* gtest
 
 # TODO
 
-* list
-* deque
 * queue
 * stack
 * map
@@ -44,8 +46,6 @@ make -j4
 
 * algorithm
 * functional
-
-* gtest
 
 # Tutorial
 

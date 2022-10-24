@@ -56,7 +56,7 @@ void test_operator_eq() {
     LOG("operator= test pass!");
 }
 
-void test_functions() {
+void test_emplace_back() {
     vector<int> v1(15);
     //  size = 15, cap = 16
     // LOG("v size: " << v.size() << " cap: " << v.capacity());
@@ -71,25 +71,42 @@ void test_functions() {
     EXPECT_EQ(v1[16], 1);
 
     LOG("emplace_back test pass!");
+}
 
+void test_push_back() {
     vector<int> v2(15);
 
     v2.emplace_back(1);
     EXPECT_EQ(v2.size(), 16);
     EXPECT_EQ(v2[15], 1);
 
+    int i = 1;
     v2.emplace_back(i);
     EXPECT_EQ(v2.size(), 17);
     EXPECT_EQ(v2[16], 1);
 
     LOG("push_back test pass!");
+}
 
+void test_pop_back() {
+    vector<int> v;
+    v.push_back(1);
+    EXPECT_EQ(v.size(), 1);
+    EXPECT_EQ(v[0], 1);
+    v.pop_back();
+    EXPECT_EQ(v.size(), 0);
+
+    LOG("pop_back test pass!");
+}
+
+void test_emplace() {
     vector<int> v3(15);
 
     v3.emplace(v3.begin(), 1);
     EXPECT_EQ(v3.size(), 16);
     EXPECT_EQ(v3[0], 1);
 
+    int i = 1;
     v3.emplace(v3.begin() + 3, i);
     EXPECT_EQ(v3.size(), 17);
     EXPECT_EQ(v3[3], 1);
@@ -99,6 +116,38 @@ void test_functions() {
     EXPECT_EQ(v3[17], 1);
 
     LOG("emplace test pass!");
+}
+
+void test_assign() {
+
+}
+
+void test_insert() {
+
+}
+
+void test_erase() {
+    
+}
+
+void test_resize() {
+
+}
+
+void test_swap() {
+
+}
+
+void test_functions() {
+    test_emplace_back();
+    test_push_back();
+    test_emplace();  
+    test_pop_back();  
+    test_assign();
+    test_insert();
+    test_erase();
+    test_resize();
+    test_swap();   
 }
 
 int main(){

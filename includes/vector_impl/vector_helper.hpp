@@ -137,6 +137,58 @@ vector<T>::reallocate_insert(iterator pos, const value_type& value) {
     _begin = new_begin; _end = new_end; _cap = new_begin + new_size;
 }
 
+/**** assign辅助函数 ****/
+template <typename T>
+template <typename ForwardIter>
+void
+vector<T>::copy_assign(ForwardIter first, ForwardIter last, forward_iterator_tag) {
+    auto len = distance(first, last);
+    if(len > capacity()) {
+        vector<T> tmp(first, last);
+        swap(tmp);
+    } else if(len > size()) {
+        auto mid = first;
+        mystl::advance(mid, len);
+        mystl::copy(first, mid, _begin);
+        auto new_end = mystl::uninitialized_copy(mid, last, _end);
+        _end = new_end;
+    } else {
+        auto new_end = mystl::copy(first, last, _begin);
+        data_allocator::destory(new_end, _end);
+        _end = new_end;
+    }
+}
+
+template <typename T>
+template <typename InputIter>
+void
+vector<T>::copy_assign(InputIter first, InputIter last, input_iterator_tag) {
+    auto cur = _begin;
+    for(; first != last, cur != _end; ++first, ++cur) {
+        *cur = *first;
+    }
+    if(first == last) {
+        erase(cur, _end);
+    } else {
+        insert(_end, first, last);
+    }
+}
+
+template <typename T>
+void 
+vector<T>::fill_assign(size_type n, const value_type& value) {
+    if(n > capacity()) {
+        vector<T> tmp(n, value);
+        swap(tmp);
+    } else if(n > size()) {
+        mystl::fill(begin(), end(), value);
+        mystl::uninitialized_fill_n(end(), n - size(), value);
+    } else {
+        auto new_end = mystl::fill_n(begin(), n, value);
+        erase(new_end, end);
+    }
+}
+
 }
 
 #endif // _MINISTL_VECTOR_HELPER_H

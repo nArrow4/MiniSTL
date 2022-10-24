@@ -14,6 +14,7 @@
 #include "constructor.hpp"
 #include "algobase.hpp"
 #include "uninitialized.hpp"
+#include <initializer_list>
 
 namespace mystl {
 
@@ -68,9 +69,6 @@ vector<T>::operator=(std::initializer_list<value_type> ilist) {
 }
 
 /**** 容器修改相关 ****/
-/**
- * @brief: 交换两个vector
- */
 template <typename T>
 void 
 vector<T>::swap(vector& rhs) noexcept {
@@ -80,9 +78,6 @@ vector<T>::swap(vector& rhs) noexcept {
     mystl::swap(_cap, rhs._cap);
 }
 
-/**
- * @brief: 在末尾插入对象
- */
 template <typename T>
 template <typename ...Args>
 void
@@ -95,9 +90,6 @@ vector<T>::emplace_back(Args&&... args) {
     }
 }
 
-/**
- * @brief: 在末尾插入对象（左值引用版）
- */
 template <typename T>
 void
 vector<T>::push_back(const value_type& value) {
@@ -109,18 +101,12 @@ vector<T>::push_back(const value_type& value) {
     }
 }
 
-/**
- * @brief: 在末尾插入对象（右值引用版）
- */
 template <typename T>
 void
 vector<T>::push_back(value_type&& value) {
     emplace_back(mystl::move(value));
 }
 
-/**
- * @brief: 插入一个对象（原地构造）
- */
 template <typename T>
 template <typename ...Args>
 typename vector<T>::iterator    // 注意这里的写法
@@ -145,14 +131,85 @@ vector<T>::emplace(const_iterator pos, Args&&... args) {
 }
 
 template <typename T>
-void 
-vector<T>::assign(size_type n, const value_type& value) {
-
+void
+vector<T>::pop_back() {
+    data_allocator::destory(_end - 1);
+    --_end;
 }
 
 template <typename T>
 void 
 vector<T>::assign(size_type n, const value_type& value) {
+    fill_assign(n, value);
+}
+
+template <typename T>
+template <typename Iter, typename std::enable_if<
+    mystl::is_input_iterator<Iter>::value, int>::type*>
+void 
+vector<T>::assign(Iter first, Iter last) {
+    copy_assign(first, last, iterator_category(first));
+}
+
+template <typename T>
+void
+vector<T>::assign(std::initializer_list<value_type> ilist) {
+    copy_assign(ilist.begin(), ilist.end(), mystl::forward_iterator_tag{});
+}
+
+template <typename T>
+typename vector<T>::iterator
+vector<T>::insert(const_iterator pos, const value_type& value) {
+
+}
+
+template <typename T>
+typename vector<T>::iterator
+vector<T>::insert(const_iterator pos, value_type&& value) {
+    return emplace(pos, mystl::move(value));
+}
+
+template <typename T>
+typename vector<T>::iterator
+vector<T>::insert(const_iterator pos, size_type n, const value_type& value) {
+
+}
+
+template <typename T>
+template <typename Iter, typename std::enable_if
+    <mystl::is_input_iterator<Iter>::value, int>::type>
+typename vector<T>::iterator
+vector<T>::insert(const_iterator pos, Iter first, Iter last) {
+    
+}
+
+template <typename T>
+typename vector<T>::iterator 
+vector<T>::erase(const_iterator pos) {
+
+}
+
+template <typename T>
+typename vector<T>::iterator
+vector<T>::erase(const_iterator first, const_iterator last) {
+
+}
+
+template <typename T>
+void 
+clear() {
+
+}
+
+template <typename T>
+void 
+vector<T>::resize(size_type n) {
+
+}
+
+template <typename T>
+void
+vector<T>::resize(size_type n, const value_type& value) {
 
 }
 

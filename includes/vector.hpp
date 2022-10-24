@@ -118,35 +118,98 @@ public:
 
 // 修改容器
 public:
+    /**
+     * @brief: 在pos的位置插入一个对象（原地构造）
+     */
     template <typename ...Args>
     iterator emplace(const_iterator pos, Args&& ...args);
+    /**
+     * @brief: 在容器末尾插入对象（原地构造）
+     */    
     template <typename ...Args>
     void emplace_back(Args&& ...args);
-
+    /**
+     * @brief: 在容器末尾插入对象（左值引用）
+     * @param {value_type&} value
+     */ 
     void push_back(const value_type& value);
+    /**
+     * @brief: 在容器末尾插入对象（右值引用）
+     * @param {value_type&&} value
+     */    
     void push_back(value_type&& value);
+    /**
+     * @brief: 删除容器中最后一个元素
+     */    
     void pop_back();
-
+    /**
+     * @brief: 
+     * @param {size_type} n
+     * @param {value_type&} value
+     */
     void assign(size_type n, const value_type& value);
+    /**
+     * @brief: 
+     * @param {initializer_list<value_type>} il
+     */
     void assign(std::initializer_list<value_type> il);
     template <typename Iter, typename std::enable_if
-        <mystl::is_input_iterator<Iter>::value, int>::type = 0>
+        <mystl::is_input_iterator<Iter>::value, int>::type* = 0>
     void assign(Iter first, Iter last);
-
+    /**
+     * @brief: 
+     * @param {const_iterator} pos
+     * @param {value_type&} value
+     */
     iterator insert(const_iterator pos, const value_type& value);
+    /**
+     * @brief: 
+     * @param {const_iterator} pos
+     * @param {value_type&&} value
+     */
     iterator insert(const_iterator pos, value_type&& value);
+    /**
+     * @brief: 
+     * @param {const_iterator} pos
+     * @param {size_type} n
+     * @param {value_type&} value
+     */
     iterator insert(const_iterator pos, size_type n, const value_type& value);
+    /**
+     * @brief: 
+     */
     template <typename Iter, typename std::enable_if
         <mystl::is_input_iterator<Iter>::value, int>::type = 0>
     iterator insert(const_iterator pos, Iter first, Iter last);
-
+    /**
+     * @brief: 
+     * @param {const_iterator} pos
+     */    
     iterator erase(const_iterator pos);
+    /**
+     * @brief: 
+     * @param {const_iterator} first
+     * @param {const_iterator} last
+     */    
     iterator erase(const_iterator first, const_iterator last);
+    /**
+     * @brief: 
+     */    
     void clear() { erase(begin(), end()); }
-
+    /**
+     * @brief: 
+     * @param {size_type} n
+     */    
     void resize(size_type n);
+    /**
+     * @brief: 
+     * @param {size_type} n
+     * @param {value_type&} value
+     */    
     void resize(size_type n, const value_type& value);
-
+    /**
+     * @brief: 交换两个vector
+     */
     void swap(vector& rhs) noexcept;
 
 // helper函数
@@ -184,7 +247,7 @@ private:
 }
 
 // 别写到namespace里了
-#include "vector/vector_helper.hpp"
-#include "vector/vector_func.hpp"
+#include "vector_impl/vector_helper.hpp"
+#include "vector_impl/vector_func.hpp"
 
 #endif // _MINISTL_VECTOR_H
